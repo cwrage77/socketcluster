@@ -58,12 +58,17 @@ expressApp.get('/health-check', (req, res) => {
   }
 })();
 
+
+var count = 0;
 // SocketCluster/WebSocket connection handling loop.
 (async () => {
   for await (let {socket} of agServer.listener('connection')) {
     // Handle socket connection.
 
-    console.log('connected >> ' + socket.id);
+    count++;
+    agServer.exchange.transmitPublish('secure', 'connected [' + count + ']>> ' + socket.id);
+
+
 
     (async () => {
       // Set up a loop to handle and respond to RPCs.
@@ -79,6 +84,21 @@ expressApp.get('/health-check', (req, res) => {
     })();
 
     (async () => {
+      // Set up a loop to handle and respond to RPCs.
+      for await (let request of socket.procedure('foo')) {
+        console.log('foorpc called');
+        if (request.data && request.data.bad) {
+          let badCustomError = new Error('Server failed to execute the procedure');
+          badCustomError.name = 'BadCustomError';
+          request.error(badCustomError);
+          continue;
+        }
+        request.end('Success');
+      }
+    })();
+
+
+    (async () => {
       // Set up a loop to handle remote transmitted events.
       for await (let data of socket.receiver('customRemoteEvent')) {
         // ...
@@ -86,6 +106,17 @@ expressApp.get('/health-check', (req, res) => {
 
       }
     })();
+
+
+    (async () => {
+      // Set up a loop to handle remote transmitted events.
+      for await (let data of socket.receiver('push')) {
+        // ...
+        console.log('push foo  >> ' + data.foo);
+
+      }
+    })();
+
 
   }
 })();

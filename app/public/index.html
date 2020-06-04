@@ -63,11 +63,19 @@
         </p>
       </div>
     </div>
+
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+
     <script type="text/javascript">
 
       let socket;
       let sockets = [];
       connect();
+
+
+
 
       (async () => {
         for await (let {error} of socket.listener('error')) {
@@ -78,6 +86,7 @@
       (async () => {
         for await (let event of socket.listener('connect')) {
           console.log('Socket is connected');
+
           // push('customRemoteEvent', 123);
           // pull('customProc', {bad: false});
           // pull('customProc', {bad: true});
@@ -111,19 +120,46 @@
         socket.transmit(push_action, push_data);
       }
 
+      function pushfoo(){
+        push('push',{foo:'foo'});
+      }
+
+      function pullfoo(){
+        pull('foo',{foo:'foo'},print());
+      }
+
+      // function pull(pull_action, pull_data){
+      //   //SEND RPC + DATA + EXPECT RESULT - TWO WAY
+      //   (async () => {
+      //     let result;
+      //     try {
+      //       result = await socket.invoke(pull_action, pull_data);
+      //       console.log(result);
+      //     } catch (error) {
+      //       console.log(error);
+      //       // error will throw.
+      //       // error.name will be 'BadCustomError'.
+      //     }
+      //   })();
+      // }
+
       function pull(pull_action, pull_data){
         //SEND RPC + DATA + EXPECT RESULT - TWO WAY
         (async () => {
           let result;
           try {
             result = await socket.invoke(pull_action, pull_data);
-            console.log(result);
+            print(result);
           } catch (error) {
             console.log(error);
             // error will throw.
             // error.name will be 'BadCustomError'.
           }
         })();
+      }
+
+      function print(message){
+        console.log(message);
       }
 
       function subfoo(){
