@@ -59,6 +59,9 @@ expressApp.get('/health-check', (req, res) => {
 })();
 
 
+
+bindMiddleware(agServer);
+
 var count = 0;
 // SocketCluster/WebSocket connection handling loop.
 (async () => {
@@ -178,3 +181,227 @@ if (SCC_STATE_SERVER_HOST) {
     })();
   }
 }
+
+
+function bindMiddleware(agServer) {
+
+  /** ORDER
+   middleware MIDDLEWARE_HANDSHAKE handshakeWS 1
+   middleware MIDDLEWARE_INBOUND_RAW message 2
+   middleware MIDDLEWARE_HANDSHAKE handshakeSC 3
+   middleware MIDDLEWARE_INBOUND_RAW message 2
+   middleware MIDDLEWARE_INBOUND subscribe 4
+   middleware MIDDLEWARE_INBOUND_RAW message 2
+   middleware MIDDLEWARE_INBOUND invoke 5
+   customProc end
+   middleware MIDDLEWARE_OUTBOUND publishOut
+   middleware MIDDLEWARE_OUTBOUND publishOut
+   middleware MIDDLEWARE_INBOUND_RAW message
+   middleware MIDDLEWARE_INBOUND publishIn
+   middleware MIDDLEWARE_OUTBOUND publishOut
+   **/
+
+  agServer.setMiddleware(agServer.MIDDLEWARE_HANDSHAKE, async (middlewareStream) => {
+    for await (let action of middlewareStream) {
+
+      // console.log("\t<<0>>");
+
+
+      if (action.type === action.HANDSHAKE_WS) {
+        // console.log("\t<<0.A>>");
+        // console.log('HANDSHAKE_WS [type,request]: ' , action.request.headers , action.request.rawHeaders);
+        // console.log('We can read/set a header here - or - based on cookie we can set header ? ');
+
+
+        // if (!action.data) {
+        //   let error = new Error(
+        //       'Transmit action must have a data object'
+        //   );
+        //   error.name = 'InvalidActionError';
+        //   action.block(error);
+        //   continue;
+        // }
+      }
+
+      if (action.type === action.HANDSHAKE_SC) {
+        // console.log("\t<<0.B>>");
+        // console.log('HANDSHAKE_SC [type,request,socket]' + action.socket.id);
+        // console.log('We can prevent the socket connection from starting to the server it we wanted to  ');
+        // if (!action.data) {
+        //   let error = new Error(
+        //       'Transmit action must have a data object'
+        //   );
+        //   error.name = 'InvalidActionError';
+        //   action.block(error);
+        //   continue;
+        // }
+      }
+
+      // console.log('middleware MIDDLEWARE_HANDSHAKE ' + action.type + ' ' + action.request + ' ' + action.data);
+      action.allow();
+    }
+  });
+
+  agServer.setMiddleware(agServer.MIDDLEWARE_INBOUND, async (middlewareStream) => {
+    for await (let action of middlewareStream) {
+
+      let allowed = true;
+
+      if (action.type === action.TRANSMIT) {
+        // console.log('inbound 1 >> MIDDLEWARE_INBOUND TRANSMIT');
+      }
+
+      if (action.type === action.INVOKE) {
+        console.log('inbound 2 >> MIDDLEWARE_INBOUND INVOKE');
+      }
+
+      if (action.type === action.SUBSCRIBE) {
+        // console.log('inbound 3 >> MIDDLEWARE_INBOUND SUBSCRIBE');
+      }
+
+      if (action.type === action.PUBLISH_IN) {
+        // console.log('inbound 4 >> MIDDLEWARE_INBOUND PUBLISH_IN');
+
+        console.log("* * publishing in " , JSON.stringify(action.socket.authToken));
+
+        if(action.socket.authState!=="authenticated"){
+          console.log("not authenticated - denied publish in");
+          // action.block();
+          // allowed = false;
+
+        } else {
+
+          //is already authenticated
+          let authToken = action.socket.authToken;
+          console.log("is authenticated: " + action.socket.authToke!=null)
+        }
+
+
+
+
+        //TODO: This is where we can put ground control....
+        // var token = action.socket.authToken;
+        // if(token!=null)
+        // {
+        //   console.log("PUBLISH IN >> token is not null >> " + token.username + " " + action.socket.authState);//TODO: DO I HAVE THE RIGHT TO PUBLISH IN >> PUBLISH OUT?
+        //
+        // }
+
+
+      }
+
+      if (action.type === action.AUTHENTICATE) {
+        // console.log('inbound 5 >> MIDDLEWARE_INBOUND AUTHENTICATE');
+      }
+
+
+      console.log('middleware MIDDLEWARE_INBOUND ' + action.type + ' ' + action.request + ' ' + action.data + action.channel);
+
+
+      if(action.type ==='subscribe')
+      {
+        console.log('subscribe request to ' + action.channel);
+        agServer.exchange.transmitPublish('secure', '*> user join channel request to: ' + action.channel);
+      }
+
+      if(allowed)
+      {
+        console.log("raw action allowed");
+        action.allow();
+      }
+
+    }
+  });
+
+  agServer.setMiddleware(agServer.MIDDLEWARE_INBOUND_RAW, async (middlewareStream) => {
+    for await (let action of middlewareStream) {
+      // if (action.type === action.MESSAGE) {
+      //   // console.log('raw >> middleware MIDDLEWARE_INBOUND_RAW ACTION ' , action);
+      //   console.log('raw >> action ended ' + action.type);
+      //   console.log('raw data' + action.data);
+      //   // console.log('raw >> middleware MIDDLEWARE_INBOUND_RAW ' + action.type + ' ' + action.request + ' ' + action.data + " " , action);
+      //
+      //   if(action.socket.authToken!=null && action.data=="deauthenticate")
+      //   {
+      //     action.allow();
+      //   } else {
+      //     console.log("Message action denied - unauthorized")
+      //   }
+      //
+      // } else {
+      //   //INCOMING RAW - NOT MESSAGE
+      //   action.allow();
+      // }
+
+
+
+      action.allow();
+    }
+  });
+
+  agServer.setMiddleware(agServer.MIDDLEWARE_OUTBOUND, async (middlewareStream) => {
+    for await (let action of middlewareStream) {
+
+      console.log('<< middleware MIDDLEWARE_OUTBOUND type: ' + action.type + ' id: ' + action.socket.id + ' data: ' + action.data);
+
+
+      //
+      // /** THIS IS THE SPOT WHERE WE CONTROL GOING OUT - CLEAN MESSAGES  ! ! ! SECURITY **/
+      // //TODO: Sanitize on the way out to the workers
+      // //TODO: THIS WORKS BUT CAN BE IMPROVED - I SUGGEST USING domPurify
+      // try{
+      //
+      //   //TODO: handle JSON exceptions better than this try catch
+      //   let data = JSON.parse(action.data);
+      //   console.log('middleware incoming action: '+ ation.type);
+      //
+      //
+      //   /** Here we can control actions **/
+      //
+      //   if(action.type=="circle"){
+      //     console.log("outbound circle data: " + data.text);
+      //   }
+      //
+      //
+      //
+      //
+      //
+      //
+      //
+      //   var XSS = false;
+      //   if(XSS===true)
+      //   {
+      //
+      //     //THIS BLOCKS ALL SCRIPT
+      //     // var clean = DOMPurify.sanitize(JSON.stringify(data), {FORBID_TAGS: ['script']});
+      //
+      //
+      //     //THIS IS SAFER - BLOCKS ALL FOR .HTML()
+      //     var clean = DOMPurify.sanitize(data.text, {SAFE_FOR_JQUERY: true});
+      //
+      //     console.log('blocked :)');
+      //     action.data = clean;
+      //     // action.block();
+      //
+      //
+      //
+      //
+      //
+      //
+      //   }
+      // }catch (err){
+      //
+      //   //console.log(" ! error : " + err.message);
+      // }
+
+      // if(jsonObject.data==="hi")
+      // {
+      //   console.log('XSS warning!');
+      //   action.block();
+      // }
+      action.allow();
+    }
+  });
+
+}
+

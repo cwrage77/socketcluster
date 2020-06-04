@@ -5,6 +5,10 @@
     <link href="//fonts.googleapis.com/css?family=Roboto:100,300" rel="stylesheet" type="text/css">
     <link rel="icon" type="image/png" href="/favicon.ico">
     <script type="text/javascript" src="/socketcluster-client.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r75/three.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.0/TweenMax.min.js"></script>
+    <script type="text/javascript" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/bas.js"></script>
+    <script type="text/javascript" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/OrbitControls-2.js"></script>
     <style>
       html {
         height: 100%;
@@ -49,22 +53,729 @@
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="content">
-        <div class="title">
-          SocketCluster
-        </div>
-        <div class="small">
-          <a href="https://socketcluster.io/docs/guides/">Guides</a> <strong>&middot;</strong>
-          <a href="https://socketcluster.io/docs/api/">API Docs</a>
-        </div>
-        <p class="github-button">
-          <iframe src="https://ghbtns.com/github-btn.html?user=socketcluster&repo=socketcluster&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
-        </p>
-      </div>
-    </div>
+<!--    <div class="container">-->
+<!--      <div class="content">-->
+<!--        <div class="title">-->
+<!--          SocketCluster-->
+<!--        </div>-->
+<!--        <div class="small">-->
+<!--          <a href="https://socketcluster.io/docs/guides/">Guides</a> <strong>&middot;</strong>-->
+<!--          <a href="https://socketcluster.io/docs/api/">API Docs</a>-->
+<!--        </div>-->
+<!--        <p class="github-button">-->
+<!--          <iframe src="https://ghbtns.com/github-btn.html?user=socketcluster&repo=socketcluster&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>-->
+<!--        </p>-->
+<!--      </div>-->
+<!--    </div>-->
 
 
+<!--<style>-->
+<!--  body {-->
+<!--    margin: 0;-->
+<!--    overflow: hidden;-->
+<!--  }-->
+
+<!--  canvas {-->
+<!--    background-image: radial-gradient(#666, #333);-->
+<!--  }-->
+
+<!--  #instructions {-->
+<!--    position: absolute;-->
+<!--    color: #fff;-->
+<!--    bottom: 0;-->
+<!--    padding-bottom: 6px;-->
+<!--    font-family: sans-serif;-->
+<!--    width: 100%;-->
+<!--    text-align: center;-->
+<!--    pointer-events: none;-->
+<!--  }-->
+<!--</style>-->
+
+<!--<div id="three-container"></div>-->
+
+<!--<div id="instructions">-->
+<!--click and drag to control the animation-->
+<!--</div>-->
+
+<!--<script>-->
+<!--  window.onload = initAnimation;-->
+<!--  console.ward = function() {}; // what warnings?-->
+
+
+<!--  var root;-->
+<!--  var tl;-->
+
+<!--  function initAnimation() {-->
+<!--    root = new THREERoot({-->
+<!--      createCameraControls: !true,-->
+<!--      antialias: (window.devicePixelRatio === 1),-->
+<!--      fov: 80-->
+<!--    });-->
+
+<!--    root.renderer.setClearColor(0x000000, 0);-->
+<!--    root.renderer.setPixelRatio(window.devicePixelRatio || 1);-->
+<!--    root.camera.position.set(0, 0, 60);-->
+
+<!--    var width = 100;-->
+<!--    var height = 60;-->
+
+
+
+<!--    //repeat, repeat delay, speed to slow, yoyo effect... no repeat?-->
+<!--    tl = new TimelineMax({repeat:-1, repeatDelay:1.0, yoyo: true});-->
+
+
+
+
+
+
+
+<!--    // var slide2 = new Slide(width, height, 'in');-->
+<!--    // var l2 = new THREE.ImageLoader();-->
+<!--    // l2.setCrossOrigin('Anonymous');-->
+<!--    // l2.load('https://w.wallhaven.cc/full/96/wallhaven-96w8e8.png', function(img) {-->
+<!--    //   slide2.setImage(img);-->
+<!--    // })-->
+<!--    //-->
+<!--    // root.scene.add(slide2);-->
+
+
+<!--    // addFirst('',tl, root);-->
+
+<!--    // tl.add(slide2.transition(), 0);-->
+
+
+
+<!--    window.addEventListener('keyup', function(e) {-->
+<!--      if (e.keyCode === 80) {-->
+<!--        tl.paused(!tl.paused());-->
+<!--      }-->
+<!--    });-->
+<!--  }-->
+
+
+<!--  function addFirst(imagepath){-->
+<!--    var slide = new Slide(100, 60, 'out'); //get width height from above...-->
+<!--    var l1 = new THREE.ImageLoader();-->
+<!--    l1.setCrossOrigin('Anonymous');-->
+<!--    l1.load(imagepath, function(img) {-->
+<!--      slide.setImage(img);-->
+<!--    });-->
+<!--    root.scene.add(slide);-->
+
+<!--    tl.add(slide.transition(), 0);-->
+<!--    createTweenScrubber(tl);-->
+
+<!--  }-->
+
+<!--  ////////////////////-->
+<!--  // CLASSES-->
+<!--  ////////////////////-->
+
+<!--  function Slide(width, height, animationPhase) {-->
+<!--    var plane = new THREE.PlaneGeometry(width, height, width * 2, height * 2);-->
+
+<!--    THREE.BAS.Utils.separateFaces(plane);-->
+
+<!--    var geometry = new SlideGeometry(plane);-->
+
+<!--    geometry.bufferUVs();-->
+
+<!--    var aAnimation = geometry.createAttribute('aAnimation', 2);-->
+<!--    var aStartPosition = geometry.createAttribute('aStartPosition', 3);-->
+<!--    var aControl0 = geometry.createAttribute('aControl0', 3);-->
+<!--    var aControl1 = geometry.createAttribute('aControl1', 3);-->
+<!--    var aEndPosition = geometry.createAttribute('aEndPosition', 3);-->
+
+<!--    var i, i2, i3, i4, v;-->
+
+<!--    var minDuration = 0.8;-->
+<!--    var maxDuration = 1.2;-->
+<!--    var maxDelayX = 0.9;-->
+<!--    var maxDelayY = 0.125;-->
+<!--    var stretch = 0.11;-->
+
+<!--    this.totalDuration = maxDuration + maxDelayX + maxDelayY + stretch;-->
+
+<!--    var startPosition = new THREE.Vector3();-->
+<!--    var control0 = new THREE.Vector3();-->
+<!--    var control1 = new THREE.Vector3();-->
+<!--    var endPosition = new THREE.Vector3();-->
+
+<!--    var tempPoint = new THREE.Vector3();-->
+
+<!--    function getControlPoint0(centroid) {-->
+<!--      var signY = Math.sign(centroid.y);-->
+
+<!--      tempPoint.x = THREE.Math.randFloat(0.1, 0.3) * 50;-->
+<!--      tempPoint.y = signY * THREE.Math.randFloat(0.1, 0.3) * 70;-->
+<!--      tempPoint.z = THREE.Math.randFloatSpread(20);-->
+
+<!--      return tempPoint;-->
+<!--    }-->
+
+<!--    function getControlPoint1(centroid) {-->
+<!--      var signY = Math.sign(centroid.y);-->
+
+<!--      tempPoint.x = THREE.Math.randFloat(0.3, 0.6) * 50;-->
+<!--      tempPoint.y = -signY * THREE.Math.randFloat(0.3, 0.6) * 70;-->
+<!--      tempPoint.z = THREE.Math.randFloatSpread(20);-->
+
+<!--      return tempPoint;-->
+<!--    }-->
+
+<!--    for (i = 0, i2 = 0, i3 = 0, i4 = 0; i < geometry.faceCount; i++, i2 += 6, i3 += 9, i4 += 12) {-->
+<!--      var face = plane.faces[i];-->
+<!--      var centroid = THREE.BAS.Utils.computeCentroid(plane, face);-->
+
+<!--      // animation-->
+<!--      var duration = THREE.Math.randFloat(minDuration, maxDuration);-->
+<!--      var delayX = THREE.Math.mapLinear(centroid.x, -width * 0.5, width * 0.5, 0.0, maxDelayX);-->
+<!--      var delayY;-->
+
+<!--      if (animationPhase === 'in') {-->
+<!--        delayY = THREE.Math.mapLinear(Math.abs(centroid.y), 0, height * 0.5, 0.0, maxDelayY)-->
+<!--      }-->
+<!--      else {-->
+<!--        delayY = THREE.Math.mapLinear(Math.abs(centroid.y), 0, height * 0.5, maxDelayY, 0.0)-->
+<!--      }-->
+
+<!--      for (v = 0; v < 6; v += 2) {-->
+<!--        aAnimation.array[i2 + v]     = delayX + delayY + (Math.random() * stretch * duration);-->
+<!--        aAnimation.array[i2 + v + 1] = duration;-->
+<!--      }-->
+
+<!--      // positions-->
+
+<!--      endPosition.copy(centroid);-->
+<!--      startPosition.copy(centroid);-->
+
+<!--      if (animationPhase === 'in') {-->
+<!--        control0.copy(centroid).sub(getControlPoint0(centroid));-->
+<!--        control1.copy(centroid).sub(getControlPoint1(centroid));-->
+<!--      }-->
+<!--      else { // out-->
+<!--        control0.copy(centroid).add(getControlPoint0(centroid));-->
+<!--        control1.copy(centroid).add(getControlPoint1(centroid));-->
+<!--      }-->
+
+<!--      for (v = 0; v < 9; v += 3) {-->
+<!--        aStartPosition.array[i3 + v]     = startPosition.x;-->
+<!--        aStartPosition.array[i3 + v + 1] = startPosition.y;-->
+<!--        aStartPosition.array[i3 + v + 2] = startPosition.z;-->
+
+<!--        aControl0.array[i3 + v]     = control0.x;-->
+<!--        aControl0.array[i3 + v + 1] = control0.y;-->
+<!--        aControl0.array[i3 + v + 2] = control0.z;-->
+
+<!--        aControl1.array[i3 + v]     = control1.x;-->
+<!--        aControl1.array[i3 + v + 1] = control1.y;-->
+<!--        aControl1.array[i3 + v + 2] = control1.z;-->
+
+<!--        aEndPosition.array[i3 + v]     = endPosition.x;-->
+<!--        aEndPosition.array[i3 + v + 1] = endPosition.y;-->
+<!--        aEndPosition.array[i3 + v + 2] = endPosition.z;-->
+<!--      }-->
+<!--    }-->
+
+<!--    var material = new THREE.BAS.BasicAnimationMaterial(-->
+<!--            {-->
+<!--              shading: THREE.FlatShading,-->
+<!--              side: THREE.DoubleSide,-->
+<!--              uniforms: {-->
+<!--                uTime: {type: 'f', value: 0}-->
+<!--              },-->
+<!--              shaderFunctions: [-->
+<!--                THREE.BAS.ShaderChunk['cubic_bezier'],-->
+<!--                //THREE.BAS.ShaderChunk[(animationPhase === 'in' ? 'ease_out_cubic' : 'ease_in_cubic')],-->
+<!--                THREE.BAS.ShaderChunk['ease_in_out_cubic'],-->
+<!--                THREE.BAS.ShaderChunk['quaternion_rotation']-->
+<!--              ],-->
+<!--              shaderParameters: [-->
+<!--                'uniform float uTime;',-->
+<!--                'attribute vec2 aAnimation;',-->
+<!--                'attribute vec3 aStartPosition;',-->
+<!--                'attribute vec3 aControl0;',-->
+<!--                'attribute vec3 aControl1;',-->
+<!--                'attribute vec3 aEndPosition;',-->
+<!--              ],-->
+<!--              shaderVertexInit: [-->
+<!--                'float tDelay = aAnimation.x;',-->
+<!--                'float tDuration = aAnimation.y;',-->
+<!--                'float tTime = clamp(uTime - tDelay, 0.0, tDuration);',-->
+<!--                'float tProgress = ease(tTime, 0.0, 1.0, tDuration);'-->
+<!--                //'float tProgress = tTime / tDuration;'-->
+<!--              ],-->
+<!--              shaderTransformPosition: [-->
+<!--                (animationPhase === 'in' ? 'transformed *= tProgress;' : 'transformed *= 1.0 - tProgress;'),-->
+<!--                'transformed += cubicBezier(aStartPosition, aControl0, aControl1, aEndPosition, tProgress);'-->
+<!--              ]-->
+<!--            },-->
+<!--            {-->
+<!--              map: new THREE.Texture(),-->
+<!--            }-->
+<!--    );-->
+
+<!--    THREE.Mesh.call(this, geometry, material);-->
+
+<!--    this.frustumCulled = false;-->
+<!--  }-->
+<!--  Slide.prototype = Object.create(THREE.Mesh.prototype);-->
+<!--  Slide.prototype.constructor = Slide;-->
+<!--  Object.defineProperty(Slide.prototype, 'time', {-->
+<!--    get: function () {-->
+<!--      return this.material.uniforms['uTime'].value;-->
+<!--    },-->
+<!--    set: function (v) {-->
+<!--      this.material.uniforms['uTime'].value = v;-->
+<!--    }-->
+<!--  });-->
+
+<!--  Slide.prototype.setImage = function(image) {-->
+<!--    this.material.uniforms.map.value.image = image;-->
+<!--    this.material.uniforms.map.value.needsUpdate = true;-->
+<!--  };-->
+
+<!--  Slide.prototype.transition = function() {-->
+<!--    return TweenMax.fromTo(this, 3.0, {time:0.0}, {time:this.totalDuration, ease:Power0.easeInOut});-->
+<!--  };-->
+
+
+<!--  function SlideGeometry(model) {-->
+<!--    THREE.BAS.ModelBufferGeometry.call(this, model);-->
+<!--  }-->
+<!--  SlideGeometry.prototype = Object.create(THREE.BAS.ModelBufferGeometry.prototype);-->
+<!--  SlideGeometry.prototype.constructor = SlideGeometry;-->
+<!--  SlideGeometry.prototype.bufferPositions = function () {-->
+<!--    var positionBuffer = this.createAttribute('position', 3).array;-->
+
+<!--    for (var i = 0; i < this.faceCount; i++) {-->
+<!--      var face = this.modelGeometry.faces[i];-->
+<!--      var centroid = THREE.BAS.Utils.computeCentroid(this.modelGeometry, face);-->
+
+<!--      var a = this.modelGeometry.vertices[face.a];-->
+<!--      var b = this.modelGeometry.vertices[face.b];-->
+<!--      var c = this.modelGeometry.vertices[face.c];-->
+
+<!--      positionBuffer[face.a * 3]     = a.x - centroid.x;-->
+<!--      positionBuffer[face.a * 3 + 1] = a.y - centroid.y;-->
+<!--      positionBuffer[face.a * 3 + 2] = a.z - centroid.z;-->
+
+<!--      positionBuffer[face.b * 3]     = b.x - centroid.x;-->
+<!--      positionBuffer[face.b * 3 + 1] = b.y - centroid.y;-->
+<!--      positionBuffer[face.b * 3 + 2] = b.z - centroid.z;-->
+
+<!--      positionBuffer[face.c * 3]     = c.x - centroid.x;-->
+<!--      positionBuffer[face.c * 3 + 1] = c.y - centroid.y;-->
+<!--      positionBuffer[face.c * 3 + 2] = c.z - centroid.z;-->
+<!--    }-->
+<!--  };-->
+
+
+<!--  function THREERoot(params) {-->
+<!--    params = utils.extend({-->
+<!--      fov: 60,-->
+<!--      zNear: 10,-->
+<!--      zFar: 100000,-->
+
+<!--      createCameraControls: true-->
+<!--    }, params);-->
+
+<!--    this.renderer = new THREE.WebGLRenderer({-->
+<!--      antialias: params.antialias,-->
+<!--      alpha: true-->
+<!--    });-->
+<!--    this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));-->
+<!--    document.getElementById('three-container').appendChild(this.renderer.domElement);-->
+
+<!--    this.camera = new THREE.PerspectiveCamera(-->
+<!--            params.fov,-->
+<!--            window.innerWidth / window.innerHeight,-->
+<!--            params.zNear,-->
+<!--            params.zfar-->
+<!--    );-->
+
+<!--    this.scene = new THREE.Scene();-->
+
+<!--    if (params.createCameraControls) {-->
+<!--      this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);-->
+<!--    }-->
+
+<!--    this.resize = this.resize.bind(this);-->
+<!--    this.tick = this.tick.bind(this);-->
+
+<!--    this.resize();-->
+<!--    this.tick();-->
+
+<!--    window.addEventListener('resize', this.resize, false);-->
+<!--  }-->
+<!--  THREERoot.prototype = {-->
+<!--    tick: function () {-->
+<!--      this.update();-->
+<!--      this.render();-->
+<!--      requestAnimationFrame(this.tick);-->
+<!--    },-->
+<!--    update: function () {-->
+<!--      this.controls && this.controls.update();-->
+<!--    },-->
+<!--    render: function () {-->
+<!--      this.renderer.render(this.scene, this.camera);-->
+<!--    },-->
+<!--    resize: function () {-->
+<!--      this.camera.aspect = window.innerWidth / window.innerHeight;-->
+<!--      this.camera.updateProjectionMatrix();-->
+
+<!--      this.renderer.setSize(window.innerWidth, window.innerHeight);-->
+<!--    }-->
+<!--  };-->
+
+<!--  ////////////////////-->
+<!--  // UTILS-->
+<!--  ////////////////////-->
+
+<!--  var utils = {-->
+<!--    extend: function (dst, src) {-->
+<!--      for (var key in src) {-->
+<!--        dst[key] = src[key];-->
+<!--      }-->
+
+<!--      return dst;-->
+<!--    },-->
+<!--    randSign: function () {-->
+<!--      return Math.random() > 0.5 ? 1 : -1;-->
+<!--    },-->
+<!--    ease: function (ease, t, b, c, d) {-->
+<!--      return b + ease.getRatio(t / d) * c;-->
+<!--    },-->
+<!--    fibSpherePoint: (function () {-->
+<!--      var vec = {x: 0, y: 0, z: 0};-->
+<!--      var G = Math.PI * (3 - Math.sqrt(5));-->
+
+<!--      return function (i, n, radius) {-->
+<!--        var step = 2.0 / n;-->
+<!--        var r, phi;-->
+
+<!--        vec.y = i * step - 1 + (step * 0.5);-->
+<!--        r = Math.sqrt(1 - vec.y * vec.y);-->
+<!--        phi = i * G;-->
+<!--        vec.x = Math.cos(phi) * r;-->
+<!--        vec.z = Math.sin(phi) * r;-->
+
+<!--        radius = radius || 1;-->
+
+<!--        vec.x *= radius;-->
+<!--        vec.y *= radius;-->
+<!--        vec.z *= radius;-->
+
+<!--        return vec;-->
+<!--      }-->
+<!--    })(),-->
+<!--    spherePoint: (function () {-->
+<!--      return function (u, v) {-->
+<!--        u === undefined && (u = Math.random());-->
+<!--        v === undefined && (v = Math.random());-->
+
+<!--        var theta = 2 * Math.PI * u;-->
+<!--        var phi = Math.acos(2 * v - 1);-->
+
+<!--        var vec = {};-->
+<!--        vec.x = (Math.sin(phi) * Math.cos(theta));-->
+<!--        vec.y = (Math.sin(phi) * Math.sin(theta));-->
+<!--        vec.z = (Math.cos(phi));-->
+
+<!--        return vec;-->
+<!--      }-->
+<!--    })()-->
+<!--  };-->
+
+<!--  function createTweenScrubber(tween, seekSpeed) {-->
+<!--    seekSpeed = seekSpeed || 0.001;-->
+
+<!--    function stop() {-->
+<!--      TweenMax.to(tween, 1, {timeScale:0});-->
+<!--    }-->
+
+<!--    function resume() {-->
+<!--      TweenMax.to(tween, 1, {timeScale:1});-->
+<!--    }-->
+
+<!--    function seek(dx) {-->
+<!--      var progress = tween.progress();-->
+<!--      var p = THREE.Math.clamp((progress + (dx * seekSpeed)), 0, 1);-->
+
+<!--      tween.progress(p);-->
+<!--    }-->
+
+<!--    var _cx = 0;-->
+
+<!--    // desktop-->
+<!--    var mouseDown = false;-->
+<!--    document.body.style.cursor = 'pointer';-->
+
+<!--    window.addEventListener('mousedown', function(e) {-->
+<!--      mouseDown = true;-->
+<!--      document.body.style.cursor = 'ew-resize';-->
+<!--      _cx = e.clientX;-->
+<!--      stop();-->
+<!--    });-->
+<!--    window.addEventListener('mouseup', function(e) {-->
+<!--      mouseDown = false;-->
+<!--      document.body.style.cursor = 'pointer';-->
+<!--      resume();-->
+<!--    });-->
+<!--    window.addEventListener('mousemove', function(e) {-->
+<!--      if (mouseDown === true) {-->
+<!--        var cx = e.clientX;-->
+<!--        var dx = cx - _cx;-->
+<!--        _cx = cx;-->
+
+<!--        seek(dx);-->
+<!--      }-->
+<!--    });-->
+<!--    // mobile-->
+<!--    window.addEventListener('touchstart', function(e) {-->
+<!--      _cx = e.touches[0].clientX;-->
+<!--      stop();-->
+<!--      e.preventDefault();-->
+<!--    });-->
+<!--    window.addEventListener('touchend', function(e) {-->
+<!--      resume();-->
+<!--      e.preventDefault();-->
+<!--    });-->
+<!--    window.addEventListener('touchmove', function(e) {-->
+<!--      var cx = e.touches[0].clientX;-->
+<!--      var dx = cx - _cx;-->
+<!--      _cx = cx;-->
+
+<!--      seek(dx);-->
+<!--      e.preventDefault();-->
+<!--    });-->
+<!--  }-->
+
+
+<!--</script>-->
+
+
+<!--<h1>Observable Embedded Cell Example</h1>-->
+<!--<p>From: <a href="https://observablehq.com/@observablehq/downloading-and-embedding-notebooks">Downloading and Embedding Notebooks</a>.</p>-->
+<!--<br><br>-->
+<!--<p>Embedded at the current version:</p>-->
+<!--<div id="observablehq-6e5586f4"></div>-->
+<!--<script type="module">-->
+<!--    import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";-->
+<!--    import define from "https://api.observablehq.com/@observablehq/downloading-and-embedding-notebooks.js?v=3";-->
+<!--    const inspect = Inspector.into("#observablehq-6e5586f4");-->
+<!--    (new Runtime).module(define, name => (name === "graphic") && inspect());-->
+<!--</script>-->
+<!--<br><br>-->
+<!--<p>Embedded at <a href="https://observablehq.com/d/c2a04e7b9a9d03bb@1046">an older version (1046)</a> of the notebook:</p>-->
+<!--<div id="observablehq-6da5969b"></div>-->
+<!--<script type="module">-->
+<!--    import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";-->
+<!--    import define from "https://api.observablehq.com/@observablehq/downloading-and-embedding-notebooks@1046.js?v=3";-->
+<!--    const inspect = Inspector.into("#observablehq-6da5969b");-->
+<!--    (new Runtime).module(define, name => (name === "graphic") && inspect());-->
+<!--</script>-->
+
+
+<!--Worldmap-->
+<!--<div id="observablehq-88deee2b">-->
+<!--    <div class="observablehq-viewof-worldMap1"></div>-->
+<!--    <div class="observablehq-worldMap1"></div>-->
+<!--    <div class="observablehq-worldMapCoordinates"></div>-->
+<!--</div>-->
+<!--<script type="module">-->
+<!--    import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";-->
+<!--    import define from "https://api.observablehq.com/@jashkenas/inputs.js?v=3";-->
+<!--    (new Runtime).module(define, name => {-->
+<!--        if (name === "viewof worldMap1") return Inspector.into("#observablehq-88deee2b .observablehq-viewof-worldMap1")();-->
+<!--        if (name === "worldMap1") return Inspector.into("#observablehq-88deee2b .observablehq-worldMap1")();-->
+<!--        if (name === "worldMapCoordinates") return Inspector.into("#observablehq-88deee2b .observablehq-worldMapCoordinates")();-->
+<!--    });-->
+<!--</script>-->
+
+
+<!--<div id="observablehq-d7645345">-->
+<!--    <div class="observablehq-sliderDemo"></div>-->
+<!--    <div class="observablehq-viewof-a"></div>-->
+<!--</div>-->
+<!--<script type="module">-->
+<!--    import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";-->
+<!--    import define from "https://api.observablehq.com/@jashkenas/inputs.js?v=3";-->
+<!--    (new Runtime).module(define, name => {-->
+<!--        if (name === "sliderDemo") return Inspector.into("#observablehq-d7645345 .observablehq-sliderDemo")();-->
+<!--        if (name === "viewof a") return Inspector.into("#observablehq-d7645345 .observablehq-viewof-a")();-->
+<!--    });-->
+<!--</script>-->
+
+
+
+<!--<div id="observablehq-b5a81fcf">-->
+<!--    <div class="observablehq-viewof-x"></div>-->
+<!--    <div class="observablehq-x"></div>-->
+<!--</div>-->
+<!--<script type="module">-->
+<!--    import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";-->
+<!--    import define from "https://api.observablehq.com/@observablehq/introduction-to-views.js?v=3";-->
+<!--    (new Runtime).module(define, name => {-->
+<!--        if (name === "viewof x") return Inspector.into("#observablehq-b5a81fcf .observablehq-viewof-x")();-->
+<!--        if (name === "x") return Inspector.into("#observablehq-b5a81fcf .observablehq-x")();-->
+<!--    });-->
+<!--</script>-->
+
+
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@observablehq/inspector@3/dist/inspector.css">
+<body>
+
+
+<!--<script type="module">-->
+
+<!--    import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";-->
+<!--    import define from "https://api.observablehq.com/@tmcw/hello-world.js?v=3";-->
+
+
+
+
+
+<!--    const runtime = new Runtime();-->
+
+<!--    const main = runtime.module(define, name => {-->
+<!--        if (name === "hello") {-->
+<!--            return new Inspector(document.body);-->
+<!--        }-->
+<!--    });-->
+<!--    -->
+
+<!--</script>-->
+
+
+
+<!--<div id="observablehq-9e1b640e">-->
+<!--    <div class="observablehq-coordinates"></div>-->
+<!--    <div class="observablehq-worldMapCoordinatesDemo"></div>-->
+<!--    <div class="observablehq-viewof-worldMap1"></div>-->
+<!--    <div class="observablehq-worldMap1"></div>-->
+<!--    <div class="observablehq-worldMapCoordinates"></div>-->
+<!--</div>-->
+<!--<script type="module">-->
+<!--    import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";-->
+<!--    import define from "https://api.observablehq.com/@jashkenas/inputs.js?v=3";-->
+<!--    (new Runtime).module(define, name => {-->
+<!--        if (name === "coordinates") return Inspector.into("#observablehq-9e1b640e .observablehq-coordinates")();-->
+<!--        if (name === "worldMapCoordinatesDemo") return Inspector.into("#observablehq-9e1b640e .observablehq-worldMapCoordinatesDemo")();-->
+<!--        if (name === "viewof worldMap1") return Inspector.into("#observablehq-9e1b640e .observablehq-viewof-worldMap1")();-->
+<!--        if (name === "worldMap1") return Inspector.into("#observablehq-9e1b640e .observablehq-worldMap1")();-->
+<!--        if (name === "worldMapCoordinates") return Inspector.into("#observablehq-9e1b640e .observablehq-worldMapCoordinates")();-->
+<!--    });-->
+<!--</script>-->
+
+
+
+<script>
+
+
+    var $global = {};
+
+
+    console.log('globalcreated');
+</script>
+
+
+
+<!--<div id="observablehq-7a763417">-->
+<!--    <div class="observablehq-slider"></div>-->
+<!--    <div class="observablehq-sliderValue"></div>-->
+<!--    <div class="observablehq-viewof-value"></div>-->
+<!--    <div class="observablehq-value"></div>-->
+<!--</div>-->
+<!--<script type="module">-->
+<!--    import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";-->
+<!--    import define from "https://api.observablehq.com/@observablehq/five-minute-introduction.js?v=3";-->
+<!--    (new Runtime).module(define, name => {-->
+<!--        if (name === "slider") return Inspector.into("#observablehq-7a763417 .observablehq-slider")();-->
+<!--        if (name === "sliderValue") return Inspector.into("#observablehq-7a763417 .observablehq-sliderValue")();-->
+<!--        if (name === "viewof value") return Inspector.into("#observablehq-7a763417 .observablehq-viewof-value")();-->
+<!--        if (name === "value") {-->
+<!--            return Inspector.into("#observablehq-7a763417 .observablehq-value")();-->
+<!--        }-->
+<!--    });-->
+
+<!--    // $(".observablehq > input").value = 50;-->
+<!--</script>-->
+
+
+
+
+
+<!--<div id="observablehq-e970adfb"></div>-->
+<!--<script src="https://d3js.org/d3.v5.min.js"></script>-->
+
+
+
+
+
+<!--<script type="module">-->
+
+<!--    //Import Observable Runtime-->
+
+<!--    import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";-->
+<!--    import define from "https://api.observablehq.com/@d3/indented-tree.js?v=3";-->
+<!--    const inspect = Inspector.into("#observablehq-e970adfb");-->
+
+<!--    // Notebook instance-->
+<!--    const notebook =(new Runtime).module(define, name => (name === "chart") && inspect());-->
+<!--    // Using D3.json to load new Json Data-->
+<!--    d3.json("https://gist.githubusercontent.com/radames/9018398d6e63bcaae86a0bf125dc6973/raw/33f19a49e1123a36e172cfc7483f0a444caf6ae3/newdata.json").then((newdata) =>{-->
+
+<!--        // When data is loaded you can use notebook to redefine a cell-->
+<!--        // In this case the data cell, where in the notebook it's using a FileAtachent-->
+<!--        // Here you can redefine with any structure hierarchy structure like-->
+
+
+<!--        console.log('data!');-->
+
+<!--        $global.notebook = notebook;-->
+
+<!--        notebook.redefine("data", newdata);-->
+<!--    })-->
+
+
+<!--</script>-->
+
+
+
+<!--<div id="observablehq-1fe46497"></div>-->
+<!--<script type="module">-->
+<!--    import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";-->
+<!--    import define from "https://api.observablehq.com/@ruichenn/week-1a-introduction-to-html-and-javascript.js?v=3";-->
+<!--    const inspect = Inspector.into("#observablehq-1fe46497");-->
+<!--    (new Runtime).module(define, name => name === "color" ? inspect() : undefined);-->
+
+
+<!--</script>-->
+
+
+
+
+
+<div id="observablehq-f496883f"></div>
+<script type="module">
+    import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+    import define from "https://api.observablehq.com/@pcarleton/do-it-live-with-observablehq-a-platform-by-the-creator-of-d3-j.js?v=3";
+    const inspect = Inspector.into("#observablehq-f496883f");
+    (new Runtime).module(define, name => name === "viewof rectWidth2" ? inspect() : undefined);
+</script>
+
+
+<!--<div id="observablehq-ae30f015"></div>-->
+<!--<script type="module">-->
+<!--    import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";-->
+<!--    import define from "https://api.observablehq.com/@d3/learn-d3-animation.js?v=3";-->
+<!--    const inspect = Inspector.into("#observablehq-ae30f015");-->
+<!--    (new Runtime).module(define, name => name === "reveal" ? inspect() : undefined);-->
+<!--</script>-->
+
+<h1>SUP</h1>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
 
