@@ -64,8 +64,10 @@
       </div>
     </div>
     <script type="text/javascript">
-      // Initiate the connection to the server
-      let socket = socketClusterClient.create();
+
+      let socket;
+      let sockets = [];
+      connect();
 
       (async () => {
         for await (let {error} of socket.listener('error')) {
@@ -76,8 +78,94 @@
       (async () => {
         for await (let event of socket.listener('connect')) {
           console.log('Socket is connected');
+          // push('customRemoteEvent', 123);
+          // pull('customProc', {bad: false});
+          // pull('customProc', {bad: true});
+          // sub();
+          // pub();
+          // pubstring('foo','sup');
         }
       })();
+
+      function connect(){
+        socket = socketClusterClient.create();
+        sockets.push(socket);
+      }
+
+      function full_reconnect(){
+        socket.killAllChannels();
+        sockets = [];
+        socket = socketClusterClient.create();
+        sockets.push(socket);
+        console.log('socket is: ' + socket.clientId);
+      }
+
+      function push_connection(){
+        socket = socketClusterClient.create();
+        sockets.push(socket);
+        console.log('socket is: ' + socket.clientId);
+      }
+
+      function push(push_action, push_data){
+        //SEND RPC + DATA >> ONE WAY
+        socket.transmit(push_action, push_data);
+      }
+
+      function pull(pull_action, pull_data){
+        //SEND RPC + DATA + EXPECT RESULT - TWO WAY
+        (async () => {
+          let result;
+          try {
+            result = await socket.invoke(pull_action, pull_data);
+            console.log(result);
+          } catch (error) {
+            console.log(error);
+            // error will throw.
+            // error.name will be 'BadCustomError'.
+          }
+        })();
+      }
+
+      function subfoo(){
+        (async () => {
+          let foo = socket.subscribe('foo');
+          for await (let data of foo) {
+            // ... Handle channel data.
+            console.log(data);
+          }
+        })();
+      }
+
+      function pubfoo(){
+        socket.transmitPublish('foo', 'This is some data');
+      }
+
+      function sub(channelname){
+        (async () => {
+          let channel = socket.subscribe(channelname);
+          for await (let data of channel) {
+            // ... Handle channel data.
+            console.log(data);
+          }
+        })();
+      }
+
+      function pubstring(channel, data){
+        socket.transmitPublish(channel, data);
+      }
+
+      function listActiveSubs(){
+        console.log(socket.getAllChannelOutputsConsumerStatsList());
+      }
+
+      function killAllChannels(){
+        console.log(socket.killAllChannels());
+      }
+
+      function printSockets(){
+        console.log(sockets);
+      }
+
     </script>
   </body>
 </html>
